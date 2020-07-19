@@ -13,6 +13,8 @@ type room struct{
 	clients map[*client]bool
 }
 
+
+
 func newRoom() *room{
 	return &room{
 		forward: make(chan []byte),
