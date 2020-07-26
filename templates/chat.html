@@ -11,6 +11,7 @@
 <body>
 
 <ul id="messages"></ul>
+Websocketを使ったチャットアプリケーション
 <form id="chatbox">
     <textarea></textarea>
     <input type="submit" value="Send" />
@@ -42,7 +43,7 @@
         if (!window["WebSocket"]) {
             alert("Error: Your browser does not support web sockets.")
         } else {
-            socket = new WebSocket("ws://{{.Host}}/room");
+            socket = new WebSocket("ws://localhost:8080/room");
             socket.onclose = function() {
                 alert("Connection has been closed.");
             }
