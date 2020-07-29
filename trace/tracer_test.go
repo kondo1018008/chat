@@ -1,24 +1,27 @@
 package trace
+
 import (
 	"bytes"
 	"testing"
 )
 
-func TestNew(t *testing.T){
+// TestNew tests the tracing behaviour.
+func TestNew(t *testing.T) {
+
 	var buf bytes.Buffer
 	tracer := New(&buf)
+
 	if tracer == nil {
-		t.Error("Newからの戻り値がnilです")
-	}else{
-		tracer.Trace("こんにちは，traceパッケージ")
-		if buf.String() != "こんにちは，traceパッケージ\n" {
-			t.Errorf("'%s'という誤った文字列が出力されました", buf.String())
-		}
+		t.Error("Return from New should not be nil")
 	}
+	tracer.Trace("Hello trace package.")
+	if buf.String() != "Hello trace package.\n" {
+		t.Errorf("Trace should not write '%s'.", buf.String())
+	}
+
 }
 
-func TestOff(t *testing.T){
-	var silentTracer Tracer = Off()
-	silentTracer.Trace("データ")
-
+func TestOff(t *testing.T) {
+	silentTracer := Off()
+	silentTracer.Trace("something")
 }
