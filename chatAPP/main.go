@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/gomniauth/providers/facebook"
 	"github.com/stretchr/gomniauth/providers/github"
 	"github.com/stretchr/gomniauth/providers/google"
+	"github.com/stretchr/objx"
 	"html/template"
 	"log"
 	"net/http"
@@ -30,7 +31,13 @@ func (t *templateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request){
 		filepath.Join : ファイルのパスを結合する
 		*/
 	})
-	print(t.temp1.Execute(w, r)) //wにテンプレをデータとして書き出す
+	data := map[string]interface{}{
+		"Host": r.Host,
+	}
+	if authCookie, err := r.Cookie("auth"); err == nil{
+		data["UserData"] = objx.MustFromBase64(authCookie.Value)
+	}
+	print(t.temp1.Execute(w, data)) //wにテンプレをデータとして書き出す
 }
 
 func main(){
