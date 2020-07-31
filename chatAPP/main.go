@@ -8,8 +8,10 @@ import (
 	"github.com/stretchr/gomniauth/providers/google"
 	"github.com/stretchr/objx"
 	"html/template"
+	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"path/filepath"
 	"sync"
 )
@@ -42,11 +44,41 @@ func main(){
 	var addr = flag.String("addr", ":8080", "The addr of the application.")
 	flag.Parse() // parse the flags
 
-	gomniauth.SetSecurityKey("ChatApp19990907")
+
+	//ここの処理どうにかまとめたい
+	filePath, err := os.Open("keys/ClientIdGoogle.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	clientIDGoogle, err :=  ioutil.ReadAll(filePath)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	filePath, err = os.Open("keys/ClientSecretGoogle.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	clientSecretGoogle, err :=  ioutil.ReadAll(filePath)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	filePath, err = os.Open("keys/SecurityKey.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	SecurityKey, err :=  ioutil.ReadAll(filePath)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+
+	gomniauth.SetSecurityKey(string(SecurityKey))
 	gomniauth.WithProviders(
 		facebook.New("","","http://localhost:8080/auth/callback/facebook"),
 		github.New("","","http://localhost:8080/auth/callback/github"),
-		google.New("263741945932-6t9sf5as84afhtdo893s4o30jb31bak7.apps.googleusercontent.com", "AHmWO1hdlKD3S4U8WfUJKB9s", "http://localhost:8080/auth/callback/google"),
+		google.New(string(clientIDGoogle), string(clientSecretGoogle), "http://localhost:8080/auth/callback/google"),
 		)
 
 	r := newRoom()//roomインスタンスの生成。r.tracer以外が初期化される。
