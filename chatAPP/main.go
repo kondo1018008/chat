@@ -56,8 +56,8 @@ func main(){
 	http.Handle("/login", &templateHandler{filename: "login.html"})//OAuth認証のプロバイダ選択画面
 	http.HandleFunc("/auth/", loginHandler)//プロバイダのページに振り分け
 	http.Handle("/room", r) //クライアントがwebsocketにアップグレードされていないので、リクエストを送るとエラーを吐いてサーバが停止する。
-
-	go r.run()
+	//"/room"はJSのコード内でコネクションを確立するときに参照する。
+	go r.run()//runメソッドをゴルーチンで並行処理
 
 	log.Println("Starting web server on", *addr)
 	if err := http.ListenAndServe(*addr, nil); err != nil {
