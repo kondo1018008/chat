@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"github.com/kondo1018008/chat/trace"
 	"github.com/stretchr/gomniauth"
 	"github.com/stretchr/gomniauth/providers/facebook"
 	"github.com/stretchr/gomniauth/providers/github"
@@ -11,7 +10,6 @@ import (
 	"html/template"
 	"log"
 	"net/http"
-	"os"
 	"path/filepath"
 	"sync"
 )
@@ -51,15 +49,15 @@ func main(){
 		google.New("263741945932-6t9sf5as84afhtdo893s4o30jb31bak7.apps.googleusercontent.com", "AHmWO1hdlKD3S4U8WfUJKB9s", "http://localhost:8080/auth/callback/google"),
 		)
 
-	r := newRoom()
-	r.tracer = trace.New(os.Stdout)
+	r := newRoom()//roomインスタンスの生成。r.tracer以外が初期化される。
+	//r.tracer = trace.New(os.Stdout)　//本ではここで初期化されていたが、room.goで初期化することとする。
 
-	http.Handle("/chat", MustAuth(&templateHandler{filename: "chat.html"}))
-	http.Handle("/login", &templateHandler{filename: "login.html"})
-	http.HandleFunc("/auth/", loginHandler)
-	http.Handle("/room", r)
-
-	go r.run()
+	http.Handle("/chat", MustAuth(&templateHandler{filename: "chat.html"})) //認証済でないユーザは"/login"にリダイレクトされる。
+	http.Handle("/login", &templateHandler{filename: "login.html"})//OAuth認証のプロバイダ選択画面
+	http.HandleFunc("/auth/", loginHandler)//プロバイダのページに振り分け
+	http.Handle("/room", r) //クライアントがwebsocketにアップグレードされていないので、リクエストを送るとエラーを吐いてサーバが停止する。
+	//"/room"はJSのコード内でコネクションを確立するときに参照する。
+	go r.run()//runメソッドをゴルーチンで並行処理
 
 	log.Println("Starting web server on", *addr)
 	if err := http.ListenAndServe(*addr, nil); err != nil {
