@@ -86,6 +86,16 @@ func main(){
 
 	http.Handle("/chat", MustAuth(&templateHandler{filename: "chat.html"})) //認証済でないユーザは"/login"にリダイレクトされる。
 	http.Handle("/login", &templateHandler{filename: "login.html"})//OAuth認証のプロバイダ選択画面
+	http.HandleFunc("/logout", func(w http.ResponseWriter, r *http.Request){
+		http.SetCookie(w, &http.Cookie{
+			Name: "auth",
+			Value: "",
+			Path: "/",
+			MaxAge: -1,
+		})
+		w.Header()["Location"] = []string{"/chat"}
+		w.WriteHeader(http.StatusTemporaryRedirect)
+	})
 	http.HandleFunc("/auth/", loginHandler)//プロバイダのページに振り分け
 	http.Handle("/room", r) //クライアントがwebsocketにアップグレードされていないので、リクエストを送るとエラーを吐いてサーバが停止する。
 	//"/room"はJSのコード内でコネクションを確立するときに参照する。
