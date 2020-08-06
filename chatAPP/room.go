@@ -15,17 +15,19 @@ type room struct{
 	leave chan *client
 	clients map[*client]bool
 	tracer trace.Tracer
+	avatar Avatar
 }
 
 
 //Javaでいうところのコンストラクタ。値の初期化をしている。
-func newRoom() *room {
+func newRoom(avatar Avatar) *room {
 	return &room{
 		forward: make(chan *message),
 		join: make(chan *client),
 		leave: make(chan *client),
 		clients: make(map[*client]bool),
 		tracer: trace.New(os.Stdout),//本ではmain.goで初期化しているが、オリジナルでここで初期化している。
+		avatar: avatar,
 	}
 }
 
