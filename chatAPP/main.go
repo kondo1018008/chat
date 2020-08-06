@@ -81,7 +81,7 @@ func main(){
 		google.New(string(clientIDGoogle), string(clientSecretGoogle), "http://localhost:8080/auth/callback/google"),
 		)
 
-	r := newRoom()//roomインスタンスの生成。r.tracer以外が初期化される。
+	r := newRoom(UseAuthAvatar)//roomインスタンスの生成。r.tracer以外が初期化される。
 	//r.tracer = trace.New(os.Stdout)　//本ではここで初期化されていたが、room.goで初期化することとする。
 
 	http.Handle("/chat", MustAuth(&templateHandler{filename: "chat.html"})) //認証済でないユーザは"/login"にリダイレクトされる。
